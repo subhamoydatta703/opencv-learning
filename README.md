@@ -1,7 +1,7 @@
 # OpenCV and MediaPipe Vision Projects
 
-Small Python projects for experimenting with webcam capture, face detection,
-face landmarks, and a Sharingan-style eye effect.
+Small Python projects for experimenting with webcam capture, face and hand
+landmarks, and anime-inspired visual effects.
 
 ## Projects
 
@@ -11,7 +11,8 @@ face landmarks, and a Sharingan-style eye effect.
 - `mediapie-learn.py` - Finds iris landmarks in `varun_dhawan.jpg` with MediaPipe.
 - `sharingan-effect.py` - Demonstrates YuNet face and eye-coordinate detection.
 - `sharingan_effect.py` - Applies a live Sharingan-style effect to the webcam feed.
-- `cv2-ver.py` - Prints the installed OpenCV version and feature information.
+- `Rasengan.py` - Detects one hand with MediaPipe and draws its landmarks live.
+
 
 ## Requirements
 
@@ -19,7 +20,7 @@ face landmarks, and a Sharingan-style eye effect.
 - A working webcam
 - `opencv-python`
 - `numpy`
-- `mediapipe` for the landmark and Sharingan effect examples
+- `mediapipe` for the face-landmark, hand-landmark, and effect examples
 
 The repository includes the model files and image used by the examples:
 
@@ -59,12 +60,14 @@ python .\face-detection-dnn.py
 python .\mediapie-learn.py
 python .\sharingan-effect.py
 python .\sharingan_effect.py
+python .\Rasengan.py
 ```
 
 Press `Esc` to close the webcam window in the OpenCV examples. Press `q` to
-close the `sharingan_effect.py` window. If the camera does not open, check that
-another application is not using it and try changing `cv2.VideoCapture(0)` to
-another camera index such as `1`.
+close the `sharingan_effect.py` window. The Rasengan hand-landmark example also
+closes with `Esc`. If the camera does not open, check that another application
+is not using it and try changing `cv2.VideoCapture(0)` to another camera index
+such as `1`.
 
 ## MediaPipe on Windows
 
