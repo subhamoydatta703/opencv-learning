@@ -1,13 +1,15 @@
 import cv2
 import mediapipe as mp
+import time
+import numpy as np
 
-# mediapipe setup
+# MediaPipe setup
 BaseOptions = mp.tasks.BaseOptions
 HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
 
-# configure hand landmarker
+# Configure hand landmarker
 options = HandLandmarkerOptions(
     base_options=BaseOptions(
         model_asset_path="hand_landmarker.task"
@@ -16,19 +18,23 @@ options = HandLandmarkerOptions(
     num_hands=1
 )
 
-# create hand landmarker
+# Create hand landmarker
 landmarker = HandLandmarker.create_from_options(options)
 
-rasengan = cv2.imread("rasengan.png", cv2.IMREAD_UNCHANGED)
+# Load Rasengan
+rasengan = cv2.imread(
+    "rasengan.png",
+    cv2.IMREAD_UNCHANGED
+)
 
-# open webcam
+# Open webcam
 cap = cv2.VideoCapture(0)
 
-# timestamp for frame
+# Start timestamp
 timestamp = 0
 
-# angle for rasengan rotation
-angle =0
+# Start rotation timer
+start_time = time.time()
 
 while True:
     ret, frame = cap.read()
@@ -36,82 +42,134 @@ while True:
     if not ret:
         break
 
-    # convert BGR to RGB
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # Convert BGR to RGB
+    rgb_frame = cv2.cvtColor(
+        frame,
+        cv2.COLOR_BGR2RGB
+    )
 
-    # convert to MediaPipe image
+    # Convert frame to MediaPipe image
     mp_image = mp.Image(
         image_format=mp.ImageFormat.SRGB,
         data=rgb_frame
     )
 
-    # increase timestamp
+    # Update timestamp
     timestamp += 1
 
-    # detect hand
+    # Detect hand
     result = landmarker.detect_for_video(
         mp_image,
         timestamp
     )
 
-    # get first hand and landmarks
+    # Get first hand
     if result.hand_landmarks:
         landmarks = result.hand_landmarks[0]
 
-        #palm indices
-        palm_indices = [0,5,9,13,17]
-        # store xs and ys
-        xs=[]
-        ys=[]
+        # Select palm landmarks
+        palm_indices = [0, 5, 9, 13, 17]
+
+        # Store X and Y coordinates
+        xs = []
+        ys = []
+
         for i in palm_indices:
-            landmark= landmarks[i]
+            landmark = landmarks[i]
+
             x = int(landmark.x * frame.shape[1])
             y = int(landmark.y * frame.shape[0])
 
             xs.append(x)
             ys.append(y)
 
-        #palm_center calculate
+        # Calculate palm center
         palm_x = sum(xs) // len(xs)
         palm_y = sum(ys) // len(ys)
 
-        #resize rasengan
+        # Measure palm width
+        index_knuckle = landmarks[5]
+        pinky_knuckle = landmarks[17]
 
-        size = 150
+        index_x = index_knuckle.x * frame.shape[1]
+        index_y = index_knuckle.y * frame.shape[0]
 
-        rasengan_resized = cv2.resize(rasengan, (size, size))
+        pinky_x = pinky_knuckle.x * frame.shape[1]
+        pinky_y = pinky_knuckle.y * frame.shape[0]
 
-        # update rasengan rotation
-        angle += 5
+        palm_width = np.hypot(
+            index_x - pinky_x,
+            index_y - pinky_y
+        )
 
-        # rotate rasengan around center
-        center = (size//2, size//2)
+        # Calculate dynamic Rasengan size
+        size = int(
+            np.clip(
+                palm_width * 2.2,
+                80,
+                280
+            )
+        )
 
-        matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+        # Resize Rasengan
+        rasengan_resized = cv2.resize(
+            rasengan,
+            (size, size)
+        )
 
-        rasengan_resized = cv2.warpAffine(rasengan_resized, matrix, (size, size), borderMode=cv2.BORDER_CONSTANT, borderValue=(0,0,0,0))
-        
+        # Calculate smooth rotation
+        angle = (time.time() - start_time) * 220
 
-        # overlay position
-        x = palm_x-size //2
-        y = palm_y-size //2
+        # Rotate around center
+        center = (size // 2, size // 2)
 
-        #overlay inside frame
-        if(x>= 0 and y>=0 and x+ size < frame.shape[1] and y + size <= frame.shape[0]):
+        matrix = cv2.getRotationMatrix2D(
+            center,
+            angle,
+            1.0
+        )
+
+        rasengan_resized = cv2.warpAffine(
+            rasengan_resized,
+            matrix,
+            (size, size),
+            borderMode=cv2.BORDER_CONSTANT,
+            borderValue=(0, 0, 0, 0)
+        )
+
+        # Calculate overlay position
+        x = palm_x - size // 2
+        y = palm_y - size // 2
+
+        # Keep overlay inside frame
+        if (
+            x >= 0
+            and y >= 0
+            and x + size <= frame.shape[1]
+            and y + size <= frame.shape[0]
+        ):
+            # Get alpha channel
             alpha = rasengan_resized[:, :, 3] / 255.0
-            # overlay rasengan
+
+            # Blend Rasengan with webcam
             for c in range(3):
-                frame[y:y + size, x:x + size, c]=(alpha * rasengan_resized[:, :, c] + (1- alpha) * frame[y:y + size, x:x + size, c])
+                frame[
+                    y:y + size,
+                    x:x + size,
+                    c
+                ] = (
+                    alpha * rasengan_resized[:, :, c]
+                    + (1 - alpha)
+                    * frame[y:y + size, x:x + size, c]
+                )
 
-
-        # cv2.circle( frame, (palm_x, palm_y), 5, (0, 255, 0), -1)
-
-
-    # show webcam
+    # Show webcam
     cv2.imshow("Rasengan", frame)
 
+    # Exit with ESC
     if cv2.waitKey(1) == 27:
         break
 
+# Cleanup
 cap.release()
 cv2.destroyAllWindows()
