@@ -1,24 +1,33 @@
-# OpenCV Webcam Projects
+# OpenCV and MediaPipe Vision Projects
 
-Small Python projects for experimenting with OpenCV webcam capture and face detection.
+Small Python projects for experimenting with webcam capture, face detection,
+face landmarks, and a Sharingan-style eye effect.
 
 ## Projects
 
 - `webcam.py` - Displays the live webcam feed.
 - `face-detection.py` - Detects faces using the Haar Cascade classifier.
 - `face-detection-dnn.py` - Detects faces using OpenCV's YuNet DNN detector.
+- `mediapie-learn.py` - Finds iris landmarks in `varun_dhawan.jpg` with MediaPipe.
+- `sharingan-effect.py` - Demonstrates YuNet face and eye-coordinate detection.
+- `sharingan_effect.py` - Applies a live Sharingan-style effect to the webcam feed.
 - `cv2-ver.py` - Prints the installed OpenCV version and feature information.
 
 ## Requirements
 
 - Python 3.12 or newer
 - A working webcam
-- OpenCV Python package
+- `opencv-python`
+- `numpy`
+- `mediapipe` for the landmark and Sharingan effect examples
 
-The repository includes the model files required by the face-detection examples:
+The repository includes the model files and image used by the examples:
 
 - `haarcascade_frontalface_default.xml`
 - `face_detection_yunet_2026may.onnx`
+- `face_landmarker.task`
+- `hand_landmarker.task`
+- `varun_dhawan.jpg`
 
 ## Setup
 
@@ -29,10 +38,10 @@ From the project root, create or activate a virtual environment. For the existin
 .\.venv2\Scripts\Activate.ps1
 ```
 
-Install OpenCV:
+Install the dependencies:
 
 ```powershell
-python -m pip install opencv-python
+python -m pip install opencv-python numpy mediapipe
 ```
 
 You can also use the existing `venv` environment by activating it with:
@@ -47,11 +56,24 @@ You can also use the existing `venv` environment by activating it with:
 python .\webcam.py
 python .\face-detection.py
 python .\face-detection-dnn.py
+python .\mediapie-learn.py
+python .\sharingan-effect.py
+python .\sharingan_effect.py
 ```
 
-Press `Esc` to close the webcam window. If the camera does not open, check that
+Press `Esc` to close the webcam window in the OpenCV examples. Press `q` to
+close the `sharingan_effect.py` window. If the camera does not open, check that
 another application is not using it and try changing `cv2.VideoCapture(0)` to
 another camera index such as `1`.
+
+## MediaPipe on Windows
+
+MediaPipe loads a native file named `libmediapipe.dll`. On Windows 11, Smart App
+Control or a work/school application-control policy can block that DLL and raise
+`WinError 4551`. If this is a managed device, ask the administrator to allow the
+approved MediaPipe package. On a personal device, only change Smart App Control
+settings if you trust the package and understand that it reduces a Windows
+security layer.
 
 ## Check the installation
 
