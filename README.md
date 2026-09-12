@@ -12,6 +12,7 @@ landmarks, and anime-inspired visual effects.
 - `sharingan-effect.py` - Demonstrates YuNet face and eye-coordinate detection.
 - `sharingan_effect.py` - Applies a live Sharingan-style effect to the webcam feed.
 - `rasengan.py` - Tracks one hand with MediaPipe and overlays a rotating Rasengan effect on the palm.
+- `rasengan-effect.py` - Uses two palm-facing hands to charge and display a procedural Rasengan effect.
 
 
 ## Requirements
@@ -62,6 +63,7 @@ python .\mediapie-learn.py
 python .\sharingan-effect.py
 python .\sharingan_effect.py
 python .\rasengan.py
+python .\rasengan-effect.py
 ```
 
 Press `Esc` to close the webcam window in the OpenCV examples. Press `q` to
@@ -69,6 +71,10 @@ close the `sharingan_effect.py` window. The Rasengan effect also closes with
 `Esc`; it needs `rasengan.png` with a transparent background. If the camera does
 not open, check that another application is not using it and try changing
 `cv2.VideoCapture(0)` to another camera index such as `1`.
+
+For `rasengan-effect.py`, hold two palms facing the camera and bring them close
+together. The sphere charges while the palms are detected, then drains when the
+hand pose is lost.
 
 ## MediaPipe on Windows
 
