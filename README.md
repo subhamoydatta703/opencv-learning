@@ -11,7 +11,7 @@ landmarks, and anime-inspired visual effects.
 - `mediapie-learn.py` - Finds iris landmarks in `varun_dhawan.jpg` with MediaPipe.
 - `sharingan-effect.py` - Demonstrates YuNet face and eye-coordinate detection.
 - `sharingan_effect.py` - Applies a live Sharingan-style effect to the webcam feed.
-- `Rasengan.py` - Detects one hand with MediaPipe and draws its landmarks live.
+- `rasengan.py` - Tracks one hand with MediaPipe and overlays a rotating Rasengan effect on the palm.
 
 
 ## Requirements
@@ -28,6 +28,7 @@ The repository includes the model files and image used by the examples:
 - `face_detection_yunet_2026may.onnx`
 - `face_landmarker.task`
 - `hand_landmarker.task`
+- `rasengan.png`
 - `varun_dhawan.jpg`
 
 ## Setup
@@ -60,14 +61,14 @@ python .\face-detection-dnn.py
 python .\mediapie-learn.py
 python .\sharingan-effect.py
 python .\sharingan_effect.py
-python .\Rasengan.py
+python .\rasengan.py
 ```
 
 Press `Esc` to close the webcam window in the OpenCV examples. Press `q` to
-close the `sharingan_effect.py` window. The Rasengan hand-landmark example also
-closes with `Esc`. If the camera does not open, check that another application
-is not using it and try changing `cv2.VideoCapture(0)` to another camera index
-such as `1`.
+close the `sharingan_effect.py` window. The Rasengan effect also closes with
+`Esc`; it needs `rasengan.png` with a transparent background. If the camera does
+not open, check that another application is not using it and try changing
+`cv2.VideoCapture(0)` to another camera index such as `1`.
 
 ## MediaPipe on Windows
 
