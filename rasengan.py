@@ -53,10 +53,24 @@ while True:
     if result.hand_landmarks:
         landmarks = result.hand_landmarks[0]
 
-        for landmark in landmarks:
+        #palm indices
+        palm_indices = [0,5,9,13,17]
+        # store xs and ys
+        xs=[]
+        ys=[]
+        for i in palm_indices:
+            landmark= landmarks[i]
             x = int(landmark.x * frame.shape[1])
             y = int(landmark.y * frame.shape[0])
-            cv2.circle( frame, (x, y), 5, (0, 255, 0), -1)
+
+            xs.append(x)
+            ys.append(y)
+
+        #palm_center calculate
+        palm_x = sum(xs) // len(xs)
+        palm_y = sum(ys) // len(ys)
+
+        cv2.circle( frame, (palm_x, palm_y), 5, (0, 255, 0), -1)
 
 
     # show webcam
